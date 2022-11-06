@@ -1,5 +1,5 @@
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.16";
+  this.driverVersion = "v1.17";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -35,12 +35,6 @@ EPD2IN13BC.prototype.C = {
   FONT_HEIGHT : 12
 };
 
-/* paint region smaller than display size
-Due to memory contraints, we paint a section of the display at a time using a smaller paint width & height
-than the display width & height
-*/
-
-/* optimize - is calling getTime faster than using getTime from Date object? */
 EPD2IN13BC.prototype.delay = function(miliseconds) {
   var currentTime = new Date().getTime();
   while (currentTime + miliseconds >= new Date().getTime()) {
@@ -151,9 +145,9 @@ EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
   val = Math.floor((x + y * this.C.WIDTH) / 8);
 
   if (colored) {
-      this.image[val] |= 0x80 >> (x % 8);  // set bit 1
+      this.image[val] |= 0x80 >> (x % 8);
   } else {
-      this.image[val] &= ~(0x80 >> (x % 8));  // set bit 0
+      this.image[val] &= ~(0x80 >> (x % 8));
   }
 };
 
@@ -201,7 +195,7 @@ EPD2IN13BC.prototype.init = function() {
   pinMode(this.dcPin, "output");
   pinMode(this.busyPin, "input");
 
-  this.image = new Uint8Array(this.C.PAINT_WIDTH * this.C.PAINT_HEIGHT / 8);
+  this.image = new Uint8Array(1024);
 
   this.reset();
 
@@ -221,9 +215,10 @@ EPD2IN13BC.prototype.init = function() {
   this.sendData(0x37);
 
   this.sendCommand(this.C.RESOLUTION_SETTING);
-  this.sendData(0x68);
+  this.sendData(0x68); //width: 104
   this.sendData(0x00);
-  this.sendData(0x30);
+  //sendData(0xD4); //height: 212
+  this.sendData(0x30); //height: 48
 
   this.clearFrame();
 };
