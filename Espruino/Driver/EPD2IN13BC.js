@@ -1,5 +1,5 @@
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.12";
+  this.driverVersion = "v1.13";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -29,8 +29,8 @@ EPD2IN13BC.prototype.C = {
   UNCOLORED :  1,
   EPD_WIDTH : 104,
   EPD_HEIGHT : 48, //212
-  PAINT_WIDTH: 128,
-  PAINT_HEIGHT : 48, //18
+  WIDTH: 128,
+  HEIGHT : 48, //18
   FONT_WIDTH : 7,
   FONT_HEIGHT : 12
 };
@@ -77,8 +77,8 @@ EPD2IN13BC.prototype.clearFrame = function() {
 };
 
 EPD2IN13BC.prototype.paint_clear = function(colored) {
-for (var x = 0; x < this.C.PAINT_WIDTH; x++) {
-  for(var y = 0; y < this.C.PAINT_HEIGHT; y++) {
+for (var x = 0; x < this.C.WIDTH; x++) {
+  for(var y = 0; y < this.C.HEIGHT; y++) {
     this.paint_drawAbsolutePixel(x, y, colored);
   }
 }
@@ -93,7 +93,7 @@ EPD2IN13BC.prototype.sleep = function() {
 
 EPD2IN13BC.prototype.paint_drawPixel = function(x, y, colored) {
 
-  if(x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
+  if(x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.HEIGHT) {
       return;
   }
   this.paint_drawAbsolutePixel(x, y, colored);
@@ -136,11 +136,11 @@ EPD2IN13BC.prototype.paint_drawStringAt = function(x, y, text, font, colored) {
 EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
   var val;
 
-  if (x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
+  if (x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.HEIGHT) {
       return;
   }
 
-  val = Math.floor((x + y * this.C.PAINT_WIDTH) / 8);
+  val = Math.floor((x + y * this.C.WIDTH) / 8);
 
   if (colored) {
       this.image[val] |= 0x80 >> (x % 8);
