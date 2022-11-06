@@ -1,5 +1,5 @@
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.10";
+  this.driverVersion = "v1.11";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -27,13 +27,10 @@ EPD2IN13BC.prototype.C = {
   DEEP_SLEEP   :  0x07,
   COLORED  :   0,
   UNCOLORED :  1,
-
   DISPLAY_WIDTH : 104,
   DISPLAY_HEIGHT : 48, //212
-
   PAINT_WIDTH: 128,
   PAINT_HEIGHT : 48, //18
-
   FONT_WIDTH : 7,
   FONT_HEIGHT : 12
 };
