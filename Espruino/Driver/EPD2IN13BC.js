@@ -1,5 +1,5 @@
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.15";
+  this.driverVersion = "v1.16";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -221,9 +221,9 @@ EPD2IN13BC.prototype.init = function() {
   this.sendData(0x37);
 
   this.sendCommand(this.C.RESOLUTION_SETTING);
-  this.sendData(this.C.EPD_WIDTH);
+  this.sendData(0x68);
   this.sendData(0x00);
-  this.sendData(this.C.EPD_HEIGHT);
+  this.sendData(0x30);
 
   this.clearFrame();
 };
