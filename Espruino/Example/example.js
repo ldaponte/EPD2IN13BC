@@ -276,7 +276,7 @@ var font_table = {
     display.paint_clear(display.C.UNCOLORED);
     display.paint_drawStringAt(8, 2, "beer 27%", font_table, display.C.COLORED);
     display.paint_drawStringAt(8, 24, "battery 93%", font_table, display.C.COLORED);
-    display.setPartialWindowBlack(0, 8, display.C.WIDTH, display.C.HEIGHT);
+    display.setPartialWindowBlack(0, 8, display.C.PAINT_WIDTH, display.C.PAINT_HEIGHT);
     
     display.displayFrame();
   
