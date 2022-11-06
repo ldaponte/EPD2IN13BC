@@ -181,7 +181,7 @@ EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
   } else {
       this.image[val] &= ~(0x80 >> (x % 8));
   }
-  timerElapsed("paint_drawAbsolutePixel");
+  //timerElapsed("paint_drawAbsolutePixel");
 };
 
 EPD2IN13BC.prototype.setPartialWindowBlack = function(x, y, w, l) {
