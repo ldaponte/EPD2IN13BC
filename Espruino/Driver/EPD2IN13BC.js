@@ -1,5 +1,14 @@
+var timerStartTime;
+
+function timerStart() {
+  timerStartTime = new Date().getTime();
+}
+
+function timerElapsed() {
+  print(new Date().getTime() - timerStartTime);
+}
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.20";
+  this.driverVersion = "v1.22";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -42,9 +51,11 @@ EPD2IN13BC.prototype.delay = function(miliseconds) {
 };
 
 EPD2IN13BC.prototype.waitBusy = function() {
+  timerStart();
   while(digitalRead(this.busyPin) == 0) {
     this.delay(100);
   }
+  timerElapsed();
 };
 
 EPD2IN13BC.prototype.sendCommand = function(command) {
@@ -215,9 +226,9 @@ EPD2IN13BC.prototype.init = function() {
   this.sendData(0x37);
 
   this.sendCommand(this.C.RESOLUTION_SETTING);
-  this.sendData(this.C.DISPLAY_WIDTH); //display width
+  this.sendData(this.C.DISPLAY_WIDTH);
   this.sendData(0x00);
-  this.sendData(this.C.DISPLAY_HEIGHT); //display height
+  this.sendData(this.C.DISPLAY_HEIGHT);
 
   this.clearFrame();
 };
