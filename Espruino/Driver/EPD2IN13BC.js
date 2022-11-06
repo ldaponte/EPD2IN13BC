@@ -35,6 +35,12 @@ EPD2IN13BC.prototype.C = {
   FONT_HEIGHT : 12
 };
 
+/* paint region smaller than display size
+Due to memory contraints, we paint a section of the display at a time using a smaller paint width & height
+than the display width & height
+*/
+
+/* optimize - is calling getTime faster than using getTime from Date object? */
 EPD2IN13BC.prototype.delay = function(miliseconds) {
   var currentTime = new Date().getTime();
   while (currentTime + miliseconds >= new Date().getTime()) {
@@ -76,12 +82,14 @@ EPD2IN13BC.prototype.clearFrame = function() {
   this.delay(2);
 };
 
+/* if colored = 0 and we've never set any bits in paint area then we don't need
+to call this function since the image buffer is automatically initialized to 0x00 */
 EPD2IN13BC.prototype.paint_clear = function(colored) {
-for (var x = 0; x < this.C.WIDTH; x++) {
-  for(var y = 0; y < this.C.HEIGHT; y++) {
-    this.paint_drawAbsolutePixel(x, y, colored);
+  if (colored) {
+    this.image.fill(0xFF);
+  } else {
+    this.image.fill(0x00);
   }
-}
 };
 
 EPD2IN13BC.prototype.sleep = function() {
@@ -143,9 +151,9 @@ EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
   val = Math.floor((x + y * this.C.WIDTH) / 8);
 
   if (colored) {
-      this.image[val] |= 0x80 >> (x % 8);
+      this.image[val] |= 0x80 >> (x % 8);  // set bit 1
   } else {
-      this.image[val] &= ~(0x80 >> (x % 8));
+      this.image[val] &= ~(0x80 >> (x % 8));  // set bit 0
   }
 };
 
@@ -193,7 +201,7 @@ EPD2IN13BC.prototype.init = function() {
   pinMode(this.dcPin, "output");
   pinMode(this.busyPin, "input");
 
-  this.image = new Uint8Array(1024);
+  this.image = new Uint8Array(this.C.PAINT_WIDTH * this.C.PAINT_HEIGHT / 8);
 
   this.reset();
 
@@ -213,10 +221,9 @@ EPD2IN13BC.prototype.init = function() {
   this.sendData(0x37);
 
   this.sendCommand(this.C.RESOLUTION_SETTING);
-  this.sendData(0x68); //width: 104
+  this.sendData(C.EPD_WIDTH);
   this.sendData(0x00);
-  //sendData(0xD4); //height: 212
-  this.sendData(0x30); //height: 48
+  this.sendData(C.EPD_HEIGHT);
 
   this.clearFrame();
 };
