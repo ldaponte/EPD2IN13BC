@@ -14,7 +14,7 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.26";
+  this.driverVersion = "v1.27";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -57,7 +57,7 @@ EPD2IN13BC.prototype.delay = function(miliseconds) {
 };
 
 EPD2IN13BC.prototype.waitBusy = function() {
-  timerStart();
+  timerStart("waitBusy");
   while(digitalRead(this.busyPin) == 0) {
     this.delay(100);
   }
@@ -65,7 +65,7 @@ EPD2IN13BC.prototype.waitBusy = function() {
 };
 
 EPD2IN13BC.prototype.sendCommand = function(command) {
-  //timerStart();  //About 3ms
+  //timerStart("sendCommand");  //About 3ms
   digitalWrite(this.dcPin, this.C.LOW);
   digitalWrite(this.csPin, this.C.LOW);
   this.spi.write(command);
@@ -74,7 +74,7 @@ EPD2IN13BC.prototype.sendCommand = function(command) {
 };
 
 EPD2IN13BC.prototype.sendData = function(data) {
-  //timerStart();  //About 3ms
+  //timerStart("sendData");  //About 3ms
   digitalWrite(this.dcPin, this.C.HIGH);
   digitalWrite(this.csPin, this.C.LOW);
   this.spi.write(data);
@@ -83,7 +83,7 @@ EPD2IN13BC.prototype.sendData = function(data) {
 };
 
 EPD2IN13BC.prototype.clearFrame = function() {
-  timerStart();
+  timerStart("clearFrame");
   this.sendCommand(this.C.DATA_START_TRANSMISSION_1);
   this.delay(2);
   for(i = 0; i < this.C.DISPLAY_WIDTH * this.C.DISPLAY_HEIGHT / 8; i++) {
@@ -102,7 +102,7 @@ EPD2IN13BC.prototype.clearFrame = function() {
 /* if colored = 0 and we've never set any bits in paint area then we don't need
 to call this function since the image buffer is automatically initialized to 0x00 */
 EPD2IN13BC.prototype.paint_clear = function(colored) {
-  timerStart();
+  timerStart("paint_clear");
   if (colored) {
     this.image.fill(0xFF);
   } else {
@@ -112,7 +112,7 @@ EPD2IN13BC.prototype.paint_clear = function(colored) {
 };
 
 EPD2IN13BC.prototype.sleep = function() {
-  timerStart();
+  timerStart("sleep");
   this.sendCommand(this.C.POWER_OFF);
   this.waitBusy();
   this.sendCommand(this.C.DEEP_SLEEP);
@@ -121,7 +121,7 @@ EPD2IN13BC.prototype.sleep = function() {
 };
 
 EPD2IN13BC.prototype.paint_drawPixel = function(x, y, colored) {
-  //timerStart();  //About 8ms
+  //timerStart("paint_drawPixel");  //About 8ms
 
   if(x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
       return;
@@ -131,7 +131,7 @@ EPD2IN13BC.prototype.paint_drawPixel = function(x, y, colored) {
 };
 
 EPD2IN13BC.prototype.paint_drawCharAt = function(x, y, ascii_char, font, colored) {
-  timerStart();
+  timerStart("paint_drawCharAt");
   var i = 0;
   var j = 0;
 
@@ -155,7 +155,7 @@ EPD2IN13BC.prototype.paint_drawCharAt = function(x, y, ascii_char, font, colored
 };
 
 EPD2IN13BC.prototype.paint_drawStringAt = function(x, y, text, font, colored) {
-  timerStart();
+  timerStart("paint_drawStringAt");
   var refcolumn = x;
   var text_elements = text.split("");
 
@@ -168,7 +168,7 @@ EPD2IN13BC.prototype.paint_drawStringAt = function(x, y, text, font, colored) {
 };
 
 EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
-  //timerStart();  //About 3.5ms
+  //timerStart("paint_drawAbsolutePixel");  //About 3.5ms
   var val;
 
   if (x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
@@ -186,7 +186,7 @@ EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
 };
 
 EPD2IN13BC.prototype.setPartialWindowBlack = function(x, y, w, l) {
-  timerStart();
+  timerStart("setPartialWindowBlack");
   this.sendCommand(this.C.PARTIAL_IN);
   this.sendCommand(this.C.PARTIAL_WINDOW);
   this.sendData(x & 0xf8);     // x should be the multiple of 8, the last 3 bit will always be ignored
@@ -213,14 +213,14 @@ EPD2IN13BC.prototype.setPartialWindowBlack = function(x, y, w, l) {
 };
 
 EPD2IN13BC.prototype.displayFrame = function() {
-  timerStart();
+  timerStart("displayFrame");
   this.sendCommand(this.C.DISPLAY_REFRESH);
   this.waitBusy();
   timerElapsed("displayFrame");
 };
 
 EPD2IN13BC.prototype.reset = function() {
-  timerStart();
+  timerStart("reset");
   digitalWrite(this.resetPin, this.C.LOW);
   this.delay(200);
   digitalWrite(this.resetPin, this.C.HIGH);
@@ -229,7 +229,7 @@ EPD2IN13BC.prototype.reset = function() {
 };
 
 EPD2IN13BC.prototype.init = function() {
-  timerStart();
+  timerStart("init");
   pinMode(this.csPin, "output");
   pinMode(this.resetPin, "output");
   pinMode(this.dcPin, "output");
