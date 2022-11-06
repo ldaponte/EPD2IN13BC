@@ -100,8 +100,8 @@ EPD2IN13BC.prototype.paint_clear = function(colored) {
 */
 
 EPD2IN13BC.prototype.paint_clear = function(colored) {
-  for (var x = 0; x < this.C.WIDTH; x++) {
-    for(var y = 0; y < this.C.HEIGHT; y++) {
+  for (var x = 0; x < this.C.PAINT_WIDTH; x++) {
+    for(var y = 0; y < this.C.PAINT_HEIGHT; y++) {
       this.paint_drawAbsolutePixel(x, y, colored);
     }
   }
@@ -116,7 +116,7 @@ EPD2IN13BC.prototype.sleep = function() {
 
 EPD2IN13BC.prototype.paint_drawPixel = function(x, y, colored) {
 
-  if(x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.HEIGHT) {
+  if(x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
       return;
   }
   this.paint_drawAbsolutePixel(x, y, colored);
