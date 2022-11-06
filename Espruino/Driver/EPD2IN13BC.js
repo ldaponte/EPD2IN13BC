@@ -1,19 +1,20 @@
 var timers = [];
 var debug = true;
 
-function timerStart() {
+function timerStart(functionName) {
   if(debug) {
     timers.push(new Date().getTime());
+    print("calling: " + functionName, new Date().getTime() - timers.pop());
   }
 }
 
 function timerElapsed(functionName) {
   if(debug) {
-    print(functionName, new Date().getTime() - timers.pop());
+    print("call complete: " + functionName, new Date().getTime() - timers.pop());
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.25";
+  this.driverVersion = "v1.26";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
