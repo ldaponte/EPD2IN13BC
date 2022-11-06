@@ -87,11 +87,21 @@ EPD2IN13BC.prototype.clearFrame = function() {
 
 /* if colored = 0 and we've never set any bits in paint area then we don't need
 to call this function since the image buffer is automatically initialized to 0x00 */
+/*
 EPD2IN13BC.prototype.paint_clear = function(colored) {
   if (colored) {
     this.image.fill(0xFF);
   } else {
     this.image.fill(0x00);
+  }
+};
+*/
+
+EPD2IN13BC.prototype.paint_clear = function(colored) {
+  for (var x = 0; x < this.C.WIDTH; x++) {
+    for(var y = 0; y < this.C.HEIGHT; y++) {
+      this.paint_drawAbsolutePixel(x, y, colored);
+    }
   }
 };
 
