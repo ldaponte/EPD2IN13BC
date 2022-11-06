@@ -1,5 +1,5 @@
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.17";
+  this.driverVersion = "v1.18";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -195,7 +195,7 @@ EPD2IN13BC.prototype.init = function() {
   pinMode(this.dcPin, "output");
   pinMode(this.busyPin, "input");
 
-  this.image = new Uint8Array(1024);
+  this.image = new Uint8Array(this.C.WIDTH * this.C.HEIGHT / 8);
 
   this.reset();
 
