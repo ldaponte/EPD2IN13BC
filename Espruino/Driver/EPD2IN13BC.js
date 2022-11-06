@@ -5,10 +5,9 @@ function EPD2IN13BC (config, spi) {
   this.csPin = config.csPin;
   this.busyPin = config.busyPin;
   this.spi = spi;
+  this.image = new Uint8Array(1024);
 }
 
-/* 212 is actual DISPLAY_HEIGHT but playing with smaller numbers 
-to improve performance when we're not using the entire display */
 EPD2IN13BC.prototype.C = {
   LOW : false,
   HIGH : true,
@@ -27,23 +26,14 @@ EPD2IN13BC.prototype.C = {
   DEEP_SLEEP   :  0x07,
   COLORED  :   0,
   UNCOLORED :  1,
-
-  DISPLAY_WIDTH : 104,
-  DISPLAY_HEIGHT : 48, //212
-
-  PAINT_WIDTH: 128,
-  PAINT_HEIGHT : 18,
-
+  EPD_WIDTH : 104,
+  EPD_HEIGHT : 48, //212
+  WIDTH: 128,
+  HEIGHT : 48, //18
   FONT_WIDTH : 7,
   FONT_HEIGHT : 12
 };
 
-/* paint region smaller than display size
-Due to memory contraints, we paint a section of the display at a time using a smaller paint width & height
-than the display width & height
-*/
-
-/* optimize - is calling getTime faster than using getTime from Date object? */
 EPD2IN13BC.prototype.delay = function(miliseconds) {
   var currentTime = new Date().getTime();
   while (currentTime + miliseconds >= new Date().getTime()) {
@@ -73,26 +63,24 @@ EPD2IN13BC.prototype.sendData = function(data) {
 EPD2IN13BC.prototype.clearFrame = function() {
   this.sendCommand(this.C.DATA_START_TRANSMISSION_1);
   this.delay(2);
-  for(i = 0; i < this.C.DISPLAY_WIDTH * this.C.DISPLAY_HEIGHT / 8; i++) { 
+  for(i = 0; i < this.C.EPD_WIDTH * this.C.EPD_HEIGHT / 8; i++) {
     this.sendData(0xFF);
   }
   this.delay(2);
   this.sendCommand(this.C.DATA_START_TRANSMISSION_2);
   this.delay(2);
-  for(i = 0; i < this.C.DISPLAY_WIDTH * this.C.DISPLAY_HEIGHT / 8; i++) {
+  for(i = 0; i < this.C.EPD_WIDTH * this.C.EPD_HEIGHT / 8; i++) {
     this.sendData(0xFF);
   }
   this.delay(2);
 };
 
-/* if colored = 0 and we've never set any bits in paint area then we don't need
-to call this function since the image buffer is automatically initialized to 0x00 */
 EPD2IN13BC.prototype.paint_clear = function(colored) {
-  if (colored) {
-    this.image.fill(0xFF);
-  } else {
-    this.image.fill(0x00);
+for (var x = 0; x < this.C.WIDTH; x++) {
+  for(var y = 0; y < this.C.HEIGHT; y++) {
+    this.paint_drawAbsolutePixel(x, y, colored);
   }
+}
 };
 
 EPD2IN13BC.prototype.sleep = function() {
@@ -104,7 +92,7 @@ EPD2IN13BC.prototype.sleep = function() {
 
 EPD2IN13BC.prototype.paint_drawPixel = function(x, y, colored) {
 
-  if(x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
+  if(x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.HEIGHT) {
       return;
   }
   this.paint_drawAbsolutePixel(x, y, colored);
@@ -147,16 +135,16 @@ EPD2IN13BC.prototype.paint_drawStringAt = function(x, y, text, font, colored) {
 EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
   var val;
 
-  if (x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
+  if (x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.HEIGHT) {
       return;
   }
 
-  val = Math.floor((x + y * this.C.PAINT_WIDTH) / 8);
+  val = Math.floor((x + y * this.C.WIDTH) / 8);
 
   if (colored) {
-      this.image[val] |= 0x80 >> (x % 8);  // set bit 1
+      this.image[val] |= 0x80 >> (x % 8);
   } else {
-      this.image[val] &= ~(0x80 >> (x % 8));  // set bit 0
+      this.image[val] &= ~(0x80 >> (x % 8));
   }
 };
 
@@ -204,8 +192,6 @@ EPD2IN13BC.prototype.init = function() {
   pinMode(this.dcPin, "output");
   pinMode(this.busyPin, "input");
 
-  this.image = new Uint8Array(this.C.PAINT_WIDTH * this.C.PAINT_HEIGHT / 8);
-
   this.reset();
 
   this.sendCommand(this.C.BOOSTER_SOFT_START);
@@ -224,9 +210,10 @@ EPD2IN13BC.prototype.init = function() {
   this.sendData(0x37);
 
   this.sendCommand(this.C.RESOLUTION_SETTING);
-  this.sendData(this.C.DISPLAY_WIDTH);
+  this.sendData(0x68); //width: 104
   this.sendData(0x00);
-  this.sendData(this.C.DISPLAY_HEIGHT);
+  //sendData(0xD4); //height: 212
+  this.sendData(0x30); //height: 48
 
   this.clearFrame();
 };
