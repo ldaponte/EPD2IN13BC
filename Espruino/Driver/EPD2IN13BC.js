@@ -1,6 +1,6 @@
 
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.03";
+  this.driverVersion = "v1.04";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
