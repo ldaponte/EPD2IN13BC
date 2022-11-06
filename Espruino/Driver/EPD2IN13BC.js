@@ -1,11 +1,12 @@
 
 function EPD2IN13BC (config, spi) {
-  this.version = "v1.01";
+  this.driverVersion = "v1.02";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
   this.busyPin = config.busyPin;
   this.spi = spi;
+  this.image = new Uint8Array(1024);
 }
 
 /* 212 is actual DISPLAY_HEIGHT but playing with smaller numbers 
@@ -214,8 +215,6 @@ EPD2IN13BC.prototype.init = function() {
   pinMode(this.resetPin, "output");
   pinMode(this.dcPin, "output");
   pinMode(this.busyPin, "input");
-
-  this.image = new Uint8Array(this.C.PAINT_WIDTH * this.C.PAINT_HEIGHT / 8);
 
   this.reset();
 
