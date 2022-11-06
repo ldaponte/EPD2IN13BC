@@ -4,7 +4,7 @@ var debug = true;
 function timerStart(functionName) {
   if(debug) {
     timers.push(new Date().getTime());
-    print("calling: " + functionName, new Date().getTime() - timers.pop());
+    print("calling: " + functionName);
   }
 }
 
@@ -14,7 +14,7 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.27";
+  this.driverVersion = "v1.28";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
