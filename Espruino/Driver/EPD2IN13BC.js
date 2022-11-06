@@ -1,5 +1,6 @@
 
 function EPD2IN13BC (config, spi) {
+  this.version = "v1.01";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;

@@ -270,6 +270,7 @@ var font_table = {
         busyPin : D31
     }, spi);
   
+    print("version: ", display.version);
     display.init();
   
     display.paint_clear(display.C.UNCOLORED);
