@@ -13,7 +13,7 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.24";
+  this.driverVersion = "v1.25";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -64,21 +64,21 @@ EPD2IN13BC.prototype.waitBusy = function() {
 };
 
 EPD2IN13BC.prototype.sendCommand = function(command) {
-  timerStart();
+  //timerStart();  //About 3ms
   digitalWrite(this.dcPin, this.C.LOW);
   digitalWrite(this.csPin, this.C.LOW);
   this.spi.write(command);
   digitalWrite(this.csPin, this.C.HIGH);
-  timerElapsed("sendCommand");
+  //timerElapsed("sendCommand");
 };
 
 EPD2IN13BC.prototype.sendData = function(data) {
-  timerStart();
+  //timerStart();  //About 3ms
   digitalWrite(this.dcPin, this.C.HIGH);
   digitalWrite(this.csPin, this.C.LOW);
   this.spi.write(data);
   digitalWrite(this.csPin, this.C.HIGH);
-  timerElapsed("sendData");
+  //timerElapsed("sendData");
 };
 
 EPD2IN13BC.prototype.clearFrame = function() {
@@ -120,13 +120,13 @@ EPD2IN13BC.prototype.sleep = function() {
 };
 
 EPD2IN13BC.prototype.paint_drawPixel = function(x, y, colored) {
-  timerStart();
+  //timerStart();  //About 8ms
 
   if(x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
       return;
   }
   this.paint_drawAbsolutePixel(x, y, colored);
-  timerElapsed("paint_drawPixel");
+  //timerElapsed("paint_drawPixel");
 };
 
 EPD2IN13BC.prototype.paint_drawCharAt = function(x, y, ascii_char, font, colored) {
@@ -167,7 +167,7 @@ EPD2IN13BC.prototype.paint_drawStringAt = function(x, y, text, font, colored) {
 };
 
 EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
-  timerStart();
+  //timerStart();  //About 3.5ms
   var val;
 
   if (x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
