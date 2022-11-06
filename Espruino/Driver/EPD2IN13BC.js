@@ -20,10 +20,9 @@ function EPD2IN13BC (config, spi) {
   this.csPin = config.csPin;
   this.busyPin = config.busyPin;
   this.spi = spi;
+  this.image = new Uint8Array(1024);
 }
 
-/* 212 is actual DISPLAY_HEIGHT but playing with smaller numbers 
-to improve performance when we're not using the entire display */
 EPD2IN13BC.prototype.C = {
   LOW : false,
   HIGH : true,
@@ -92,15 +91,13 @@ EPD2IN13BC.prototype.clearFrame = function() {
   this.delay(2);
   this.sendCommand(this.C.DATA_START_TRANSMISSION_2);
   this.delay(2);
-  for(i = 0; i < this.C.DISPLAY_WIDTH * this.C.DISPLAY_HEIGHT / 8; i++) {
+  for(i = 0; i < this.C.EPD_WIDTH * this.C.EPD_HEIGHT / 8; i++) {
     this.sendData(0xFF);
   }
   this.delay(2);
   timerElapsed("clearFrame");
 };
 
-/* if colored = 0 and we've never set any bits in paint area then we don't need
-to call this function since the image buffer is automatically initialized to 0x00 */
 EPD2IN13BC.prototype.paint_clear = function(colored) {
   timerStart("paint_clear");
   if (colored) {
@@ -171,11 +168,11 @@ EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
   //timerStart("paint_drawAbsolutePixel");  //About 3.5ms
   var val;
 
-  if (x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
+  if (x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.HEIGHT) {
       return;
   }
 
-  val = Math.floor((x + y * this.C.PAINT_WIDTH) / 8);
+  val = Math.floor((x + y * this.C.WIDTH) / 8);
 
   if (colored) {
       this.image[val] |= 0x80 >> (x % 8);
@@ -235,8 +232,6 @@ EPD2IN13BC.prototype.init = function() {
   pinMode(this.dcPin, "output");
   pinMode(this.busyPin, "input");
 
-  this.image = new Uint8Array(this.C.PAINT_WIDTH * this.C.PAINT_HEIGHT / 8);
-
   this.reset();
 
   this.sendCommand(this.C.BOOSTER_SOFT_START);
@@ -255,9 +250,10 @@ EPD2IN13BC.prototype.init = function() {
   this.sendData(0x37);
 
   this.sendCommand(this.C.RESOLUTION_SETTING);
-  this.sendData(this.C.DISPLAY_WIDTH);
+  this.sendData(0x68); //width: 104
   this.sendData(0x00);
-  this.sendData(this.C.DISPLAY_HEIGHT);
+  //sendData(0xD4); //height: 212
+  this.sendData(0x30); //height: 48
 
   this.clearFrame();
   timerElapsed("init");
