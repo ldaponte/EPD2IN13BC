@@ -1,5 +1,5 @@
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.11";
+  this.driverVersion = "v1.12";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -27,8 +27,8 @@ EPD2IN13BC.prototype.C = {
   DEEP_SLEEP   :  0x07,
   COLORED  :   0,
   UNCOLORED :  1,
-  DISPLAY_WIDTH : 104,
-  DISPLAY_HEIGHT : 48, //212
+  EPD_WIDTH : 104,
+  EPD_HEIGHT : 48, //212
   PAINT_WIDTH: 128,
   PAINT_HEIGHT : 48, //18
   FONT_WIDTH : 7,
@@ -64,13 +64,13 @@ EPD2IN13BC.prototype.sendData = function(data) {
 EPD2IN13BC.prototype.clearFrame = function() {
   this.sendCommand(this.C.DATA_START_TRANSMISSION_1);
   this.delay(2);
-  for(i = 0; i < this.C.DISPLAY_WIDTH * this.C.DISPLAY_HEIGHT / 8; i++) {
+  for(i = 0; i < this.C.EPD_WIDTH * this.C.EPD_HEIGHT / 8; i++) {
     this.sendData(0xFF);
   }
   this.delay(2);
   this.sendCommand(this.C.DATA_START_TRANSMISSION_2);
   this.delay(2);
-  for(i = 0; i < this.C.DISPLAY_WIDTH * this.C.DISPLAY_HEIGHT / 8; i++) {
+  for(i = 0; i < this.C.EPD_WIDTH * this.C.EPD_HEIGHT / 8; i++) {
     this.sendData(0xFF);
   }
   this.delay(2);
