@@ -1,11 +1,10 @@
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.08";
+  this.driverVersion = "v1.09";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
   this.busyPin = config.busyPin;
   this.spi = spi;
-  this.image = new Uint8Array(1024);
 }
 
 EPD2IN13BC.prototype.C = {
@@ -192,6 +191,8 @@ EPD2IN13BC.prototype.init = function() {
   pinMode(this.dcPin, "output");
   pinMode(this.busyPin, "input");
 
+  this.image = new Uint8Array(1024);
+  
   this.reset();
 
   this.sendCommand(this.C.BOOSTER_SOFT_START);
