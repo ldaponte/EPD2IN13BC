@@ -1,6 +1,6 @@
 
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.02";
+  this.driverVersion = "v1.03";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -116,7 +116,7 @@ EPD2IN13BC.prototype.sleep = function() {
 
 EPD2IN13BC.prototype.paint_drawPixel = function(x, y, colored) {
 
-  if(x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
+  if(x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.HEIGHT) {
       return;
   }
   this.paint_drawAbsolutePixel(x, y, colored);
