@@ -5,7 +5,9 @@ E-Paper Espruino Driver Port Project
 
 - Waveshare driver on GitHub: https://github.com/waveshare/e-Paper/tree/master/Arduino/epd2in13bc
 
-My goal is to get this particular revison of the Waveshare 2.13 e-paper display working on a Puck.js device with very basic functionality.  Please expand functionality as needed.
+My goal was to get this particular revison of the Waveshare 2.13 e-paper display working on a Puck.js device with very basic functionality.  Please expand functionality as needed.
+
+Hard coded font size to 7x12
 
 Waveshare 2.13 inch e-paper display V2.1 to Puck.js pinouts
 
