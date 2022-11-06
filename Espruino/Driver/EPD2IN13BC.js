@@ -4,11 +4,11 @@ function timerStart() {
   timerStartTime = new Date().getTime();
 }
 
-function timerElapsed() {
-  print(new Date().getTime() - timerStartTime);
+function timerElapsed(functionName) {
+  print(functionName, new Date().getTime() - timerStartTime);
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.22";
+  this.driverVersion = "v1.23";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -55,7 +55,7 @@ EPD2IN13BC.prototype.waitBusy = function() {
   while(digitalRead(this.busyPin) == 0) {
     this.delay(100);
   }
-  timerElapsed();
+  timerElapsed("waitBusy");
 };
 
 EPD2IN13BC.prototype.sendCommand = function(command) {
