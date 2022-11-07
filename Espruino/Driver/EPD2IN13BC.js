@@ -1,13 +1,29 @@
+var timers = [];
+var debug = true;
 
+function timerStart(functionName) {
+  if(debug) {
+    timers.push(new Date().getTime());
+    print("calling: " + functionName);
+  }
+}
+
+function timerElapsed(functionName) {
+  if(debug) {
+    print("call complete: " + functionName, new Date().getTime() - timers.pop());
+  }
+}
 function EPD2IN13BC (config, spi) {
+  this.driverVersion = "v1.28";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
   this.busyPin = config.busyPin;
   this.spi = spi;
-  this.image = new Uint8Array(1024);
 }
 
+/* 212 is actual DISPLAY_HEIGHT but playing with smaller numbers 
+to improve performance when we're not using the entire display */
 EPD2IN13BC.prototype.C = {
   LOW : false,
   HIGH : true,
@@ -26,10 +42,10 @@ EPD2IN13BC.prototype.C = {
   DEEP_SLEEP   :  0x07,
   COLORED  :   0,
   UNCOLORED :  1,
-  EPD_WIDTH : 104,
-  EPD_HEIGHT : 48, //212
-  WIDTH: 128,
-  HEIGHT : 48, //18
+  DISPLAY_WIDTH : 104,
+  DISPLAY_HEIGHT : 48, //212
+  PAINT_WIDTH: 128,
+  PAINT_HEIGHT : 48, //18
   FONT_WIDTH : 7,
   FONT_HEIGHT : 12
 };
@@ -41,64 +57,81 @@ EPD2IN13BC.prototype.delay = function(miliseconds) {
 };
 
 EPD2IN13BC.prototype.waitBusy = function() {
+  timerStart("waitBusy");
   while(digitalRead(this.busyPin) == 0) {
     this.delay(100);
   }
+  timerElapsed("waitBusy");
 };
 
 EPD2IN13BC.prototype.sendCommand = function(command) {
+  //timerStart("sendCommand");  //About 3ms
   digitalWrite(this.dcPin, this.C.LOW);
   digitalWrite(this.csPin, this.C.LOW);
   this.spi.write(command);
   digitalWrite(this.csPin, this.C.HIGH);
+  //timerElapsed("sendCommand");
 };
 
 EPD2IN13BC.prototype.sendData = function(data) {
+  //timerStart("sendData");  //About 3ms
   digitalWrite(this.dcPin, this.C.HIGH);
   digitalWrite(this.csPin, this.C.LOW);
   this.spi.write(data);
   digitalWrite(this.csPin, this.C.HIGH);
+  //timerElapsed("sendData");
 };
 
 EPD2IN13BC.prototype.clearFrame = function() {
+  timerStart("clearFrame");
   this.sendCommand(this.C.DATA_START_TRANSMISSION_1);
   this.delay(2);
-  for(i = 0; i < this.C.EPD_WIDTH * this.C.EPD_HEIGHT / 8; i++) {
+  for(i = 0; i < this.C.DISPLAY_WIDTH * this.C.DISPLAY_HEIGHT / 8; i++) {
     this.sendData(0xFF);
   }
   this.delay(2);
   this.sendCommand(this.C.DATA_START_TRANSMISSION_2);
   this.delay(2);
-  for(i = 0; i < this.C.EPD_WIDTH * this.C.EPD_HEIGHT / 8; i++) {
+  for(i = 0; i < this.C.DISPLAY_WIDTH * this.C.DISPLAY_HEIGHT / 8; i++) {
     this.sendData(0xFF);
   }
   this.delay(2);
+  timerElapsed("clearFrame");
 };
 
+/* if colored = 0 and we've never set any bits in paint area then we don't need
+to call this function since the image buffer is automatically initialized to 0x00 */
 EPD2IN13BC.prototype.paint_clear = function(colored) {
-for (var x = 0; x < this.C.WIDTH; x++) {
-  for(var y = 0; y < this.C.HEIGHT; y++) {
-    this.paint_drawAbsolutePixel(x, y, colored);
+  timerStart("paint_clear");
+  if (colored) {
+    this.image.fill(0xFF);
+  } else {
+    this.image.fill(0x00);
   }
-}
+  timerElapsed("paint_clear");
 };
 
 EPD2IN13BC.prototype.sleep = function() {
+  timerStart("sleep");
   this.sendCommand(this.C.POWER_OFF);
   this.waitBusy();
   this.sendCommand(this.C.DEEP_SLEEP);
   this.sendData(0xA5);     // check code
+  timerElapsed("sleep");
 };
 
 EPD2IN13BC.prototype.paint_drawPixel = function(x, y, colored) {
+  //timerStart("paint_drawPixel");  //About 8ms
 
-  if(x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.HEIGHT) {
+  if(x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
       return;
   }
   this.paint_drawAbsolutePixel(x, y, colored);
+  //timerElapsed("paint_drawPixel");
 };
 
 EPD2IN13BC.prototype.paint_drawCharAt = function(x, y, ascii_char, font, colored) {
+  timerStart("paint_drawCharAt");
   var i = 0;
   var j = 0;
 
@@ -118,10 +151,11 @@ EPD2IN13BC.prototype.paint_drawCharAt = function(x, y, ascii_char, font, colored
           offset++;
       }
   }
+  timerElapsed("paint_drawCharAt");
 };
 
 EPD2IN13BC.prototype.paint_drawStringAt = function(x, y, text, font, colored) {
-
+  timerStart("paint_drawStringAt");
   var refcolumn = x;
   var text_elements = text.split("");
 
@@ -130,26 +164,29 @@ EPD2IN13BC.prototype.paint_drawStringAt = function(x, y, text, font, colored) {
     this.paint_drawCharAt(refcolumn, y, text_elements[i], font, colored);
     refcolumn += this.C.FONT_WIDTH;
   }
+  timerElapsed("paint_drawStringAt");
 };
 
 EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
+  //timerStart("paint_drawAbsolutePixel");  //About 3.5ms
   var val;
 
-  if (x < 0 || x >= this.C.WIDTH || y < 0 || y >= this.C.HEIGHT) {
+  if (x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
       return;
   }
 
-  val = Math.floor((x + y * this.C.WIDTH) / 8);
+  val = Math.floor((x + y * this.C.PAINT_WIDTH) / 8);
 
   if (colored) {
       this.image[val] |= 0x80 >> (x % 8);
   } else {
       this.image[val] &= ~(0x80 >> (x % 8));
   }
+  //timerElapsed("paint_drawAbsolutePixel");
 };
 
 EPD2IN13BC.prototype.setPartialWindowBlack = function(x, y, w, l) {
-
+  timerStart("setPartialWindowBlack");
   this.sendCommand(this.C.PARTIAL_IN);
   this.sendCommand(this.C.PARTIAL_WINDOW);
   this.sendData(x & 0xf8);     // x should be the multiple of 8, the last 3 bit will always be ignored
@@ -172,25 +209,33 @@ EPD2IN13BC.prototype.setPartialWindowBlack = function(x, y, w, l) {
   }
   this.delay(2);
   this.sendCommand(this.C.PARTIAL_OUT);
+  timerElapsed("setPartialWindowBlack");
 };
 
 EPD2IN13BC.prototype.displayFrame = function() {
+  timerStart("displayFrame");
   this.sendCommand(this.C.DISPLAY_REFRESH);
   this.waitBusy();
+  timerElapsed("displayFrame");
 };
 
 EPD2IN13BC.prototype.reset = function() {
+  timerStart("reset");
   digitalWrite(this.resetPin, this.C.LOW);
   this.delay(200);
   digitalWrite(this.resetPin, this.C.HIGH);
   this.delay(200);
+  timerElapsed("reset");
 };
 
 EPD2IN13BC.prototype.init = function() {
+  timerStart("init");
   pinMode(this.csPin, "output");
   pinMode(this.resetPin, "output");
   pinMode(this.dcPin, "output");
   pinMode(this.busyPin, "input");
+
+  this.image = new Uint8Array(this.C.PAINT_WIDTH * this.C.PAINT_HEIGHT / 8);
 
   this.reset();
 
@@ -210,12 +255,12 @@ EPD2IN13BC.prototype.init = function() {
   this.sendData(0x37);
 
   this.sendCommand(this.C.RESOLUTION_SETTING);
-  this.sendData(0x68); //width: 104
+  this.sendData(this.C.DISPLAY_WIDTH);
   this.sendData(0x00);
-  //sendData(0xD4); //height: 212
-  this.sendData(0x30); //height: 48
+  this.sendData(this.C.DISPLAY_HEIGHT);
 
   this.clearFrame();
+  timerElapsed("init");
 };
 
 exports.connect = function (config, spi) {

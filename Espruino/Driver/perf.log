@@ -1,0 +1,64 @@
+version:  v1.28
+calling: init
+calling: reset
+call complete: reset 405.3955078125
+calling: waitBusy
+call complete: waitBusy 103.85131835937
+calling: clearFrame
+call complete: clearFrame 3314.42260742187
+call complete: init 3861.51123046875
+calling: paint_clear
+call complete: paint_clear 20.05004882812
+calling: paint_drawStringAt
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 186.85913085937
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 170.22705078125
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 170.19653320312
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 162.01782226562
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 104.46166992187
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 170.34912109375
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 157.958984375
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 157.77587890625
+call complete: paint_drawStringAt 1311.8896484375
+calling: paint_drawStringAt
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 186.95068359375
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 178.52783203125
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 161.9873046875
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 162.2314453125
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 170.31860351562
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 162.13989257812
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 186.82861328125
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 104.09545898437
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 178.31420898437
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 166.29028320312
+calling: paint_drawCharAt
+call complete: paint_drawCharAt 158.05053710937
+call complete: paint_drawStringAt 1858.36791992187
+calling: setPartialWindowBlack
+call complete: setPartialWindowBlack 2006.77490234375
+calling: displayFrame
+calling: waitBusy
+call complete: waitBusy 19071.22802734375
+call complete: displayFrame 19077.57568359375
+calling: sleep
+calling: waitBusy
+call complete: waitBusy 103.85131835937
+call complete: sleep 114.013671875
+> 

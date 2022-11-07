@@ -263,19 +263,20 @@ var font_table = {
         sck:  D2
     });
   
-    var display = require("https://raw.githubusercontent.com/ldaponte/EPD2IN13BC/main/Espruino/Driver/EPD2IN13BC.js").connect({
+    var display = require("https://raw.githubusercontent.com/ldaponte/EPD2IN13BC/experimental/Espruino/Driver/EPD2IN13BC.js").connect({
         resetPin : D30,
         dcPin : D29,
         csPin : D28,
         busyPin : D31
     }, spi);
   
+    print("version: ", display.driverVersion);
     display.init();
   
     display.paint_clear(display.C.UNCOLORED);
     display.paint_drawStringAt(8, 2, "beer 27%", font_table, display.C.COLORED);
     display.paint_drawStringAt(8, 24, "battery 93%", font_table, display.C.COLORED);
-    display.setPartialWindowBlack(0, 8, display.C.WIDTH, display.C.HEIGHT);
+    display.setPartialWindowBlack(0, 8, display.C.PAINT_WIDTH, display.C.PAINT_HEIGHT);
     
     display.displayFrame();
   
