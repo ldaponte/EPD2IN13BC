@@ -263,7 +263,7 @@ var font_table = {
         sck:  D2
     });
   
-    var display = require("https://raw.githubusercontent.com/ldaponte/EPD2IN13BC/experimental/Espruino/Driver/EPD2IN13BC.js").connect({
+    var display = require("https://raw.githubusercontent.com/ldaponte/EPD2IN13BC/main/Espruino/Driver/EPD2IN13BC.js").connect({
         resetPin : D30,
         dcPin : D29,
         csPin : D28,
