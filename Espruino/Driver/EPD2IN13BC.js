@@ -14,7 +14,7 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.29";
+  this.driverVersion = "v1.30";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -69,6 +69,14 @@ EPD2IN13BC.prototype.setImageHeight = function(height) {
     this.image = new Uint8Array(this.imageWidth * this.imageHeight / 8);  //automatically grow the image buffer - contents lost
   }
 };
+
+EPD2IN13BC.prototype.getImageHeight = function() {
+  return this.imageHeight;
+}
+
+EPD2IN13BC.prototype.getImageWidth = function() {
+  return this.imageWidth;
+}
 
 EPD2IN13BC.prototype.delay = function(miliseconds) {
   var currentTime = new Date().getTime();
