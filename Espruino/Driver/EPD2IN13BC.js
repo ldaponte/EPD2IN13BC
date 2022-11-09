@@ -14,14 +14,13 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.30";
+  this.driverVersion = "v1.31";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
   this.busyPin = config.busyPin;
   this.spi = spi;
   this.image = new Uint8Array(0);
-  this.paintHeight = config.paintHeight;
 }
 
 /* 212 is actual DISPLAY_HEIGHT but playing with smaller numbers 
@@ -151,7 +150,7 @@ EPD2IN13BC.prototype.sleep = function() {
 EPD2IN13BC.prototype.paintDrawPixel = function(x, y, colored) {
   //timerStart("paintDrawPixel");  //About 8ms
 
-  if(x < 0 || x >= this.paintWidth || y < 0 || y >= this.paintHeight) {
+  if(x < 0 || x >= this.imageWidth || y < 0 || y >= this.imageHeight) {
       return;
   }
   this.paintDrawAbsolutePixel(x, y, colored);
@@ -199,11 +198,11 @@ EPD2IN13BC.prototype.paintDrawAbsolutePixel = function(x, y, colored) {
   //timerStart("paintDrawAbsolutePixel");  //About 3.5ms
   var val;
 
-  if (x < 0 || x >= this.paintWidth || y < 0 || y >= this.paintHeight) {
+  if (x < 0 || x >= this.imageWidth || y < 0 || y >= this.imageHeight) {
       return;
   }
 
-  val = Math.floor((x + y * this.paintWidth) / 8);
+  val = Math.floor((x + y * this.imageWidth) / 8);
 
   if (colored) {
       this.image[val] |= 0x80 >> (x % 8);
