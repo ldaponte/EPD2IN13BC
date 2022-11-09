@@ -273,7 +273,7 @@ function run() {
 
   display.init();
 
-  display.setImageBuffer(128, 18);  //Number of pixels wide x pixels heigh
+  display.setImageBuffer(display.getDisplayWidth(), 18);  //Number of buffer pixels wide x pixels heigh
   
   display.paintClear(display.C.UNCOLORED);
   display.paintDrawStringAt(8, 2, "beer 27%", font_table, display.C.COLORED);

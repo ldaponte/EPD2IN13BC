@@ -14,7 +14,7 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.31";
+  this.driverVersion = "v1.32";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -44,7 +44,7 @@ EPD2IN13BC.prototype.C = {
   COLORED  :   0,
   UNCOLORED :  1,
   DISPLAY_WIDTH : 104,
-  DISPLAY_HEIGHT : 212, //212
+  DISPLAY_HEIGHT : 212,
   FONT_WIDTH : 7,
   FONT_HEIGHT : 12
 };
@@ -75,6 +75,14 @@ EPD2IN13BC.prototype.getImageHeight = function() {
 
 EPD2IN13BC.prototype.getImageWidth = function() {
   return this.imageWidth;
+}
+
+EPD2IN13BC.prototype.getDisplayHeight = function() {
+  return this.C.DISPLAY_HEIGHT;
+}
+
+EPD2IN13BC.prototype.getDisplayWidth = function() {
+  return this.C.DISPLAY_WIDTH;
 }
 
 EPD2IN13BC.prototype.delay = function(miliseconds) {
