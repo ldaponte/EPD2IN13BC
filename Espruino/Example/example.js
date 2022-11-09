@@ -267,6 +267,7 @@ function run() {
       dcPin : D29,
       csPin : D28,
       busyPin : D31,
+      rotate: 180
   }, spi);
 
   print("version: ", display.driverVersion);

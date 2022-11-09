@@ -19,6 +19,7 @@ function EPD2IN13BC (config, spi) {
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
   this.busyPin = config.busyPin;
+  this.rotate = config.rotate;
   this.spi = spi;
   this.image = new Uint8Array(0);
 }
@@ -156,13 +157,20 @@ EPD2IN13BC.prototype.sleep = function() {
 };
 
 EPD2IN13BC.prototype.paintDrawPixel = function(x, y, colored) {
-  //timerStart("paintDrawPixel");  //About 8ms
 
-  if(x < 0 || x >= this.imageWidth || y < 0 || y >= this.imageHeight) {
+  if (this.rotate == 0) {
+      if(x < 0 || x >= this.imageWidth || y < 0 || y >= this.imageHeight) {
+          return;
+      }
+      this.paintDrawAbsolutePixel(x, y, colored);
+  } else if (this.rotate == 180) {
+    if(x < 0 || x >= this.imageWidth || y < 0 || y >= this.imageHeight) {
       return;
+    }
+    x = this.imageWidth - x;
+    y = this.imageHeight - y;
+    this.paintDrawAbsolutePixel(x, y, colored);
   }
-  this.paintDrawAbsolutePixel(x, y, colored);
-  //timerElapsed("paintDrawPixel");
 };
 
 EPD2IN13BC.prototype.paintDrawCharAt = function(x, y, ascii_char, font, colored) {
