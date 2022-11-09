@@ -14,7 +14,7 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.33";
+  this.driverVersion = "v1.35";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -230,6 +230,11 @@ EPD2IN13BC.prototype.paintDrawAbsolutePixel = function(x, y, colored) {
 
 EPD2IN13BC.prototype.setPartialWindowBlack = function(x, y, w, l) {
   timerStart("setPartialWindowBlack");
+
+  if (this.rotate == 180) {
+      x = this.C.DISPLAY_HEIGHT - this.imageHeight - x;
+  }
+
   this.sendCommand(this.C.PARTIAL_IN);
   this.sendCommand(this.C.PARTIAL_WINDOW);
   this.sendData(x & 0xf8);     // x should be the multiple of 8, the last 3 bit will always be ignored

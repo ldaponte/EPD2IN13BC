@@ -267,7 +267,7 @@ function run() {
       dcPin : D29,
       csPin : D28,
       busyPin : D31,
-      rotate: 180
+      rotate: 180 // must be 0 or 180, does not support partial rotation
   }, spi);
 
   print("version: ", display.driverVersion);
@@ -305,11 +305,11 @@ function run() {
   // in this example we are displaying the image buffer starting at the display pixel column 0
   // and the display pixel row 8.
   // the text should display starting pixel column 8 (8 + 0) and pixel row 10 (2 + 8)
-  display.setPartialWindowBlack(0, 168, display.getImageWidth(), display.getImageHeight());
+  display.setPartialWindowBlack(0, 8, display.getImageWidth(), display.getImageHeight());
   
   display.paintClear(display.C.UNCOLORED);
   display.paintDrawStringAt(8, 2, "battery 88%", font_table, display.C.COLORED);
-  display.setPartialWindowBlack(0, 184, display.getImageWidth(), display.getImageHeight());
+  display.setPartialWindowBlack(0, 24, display.getImageWidth(), display.getImageHeight());
   
   // displayFrame tells the hardware to display what was sent to the display memory by 
   // setPartialWindowBlack
