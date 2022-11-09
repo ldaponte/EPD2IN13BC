@@ -14,7 +14,7 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.35";
+  this.driverVersion = "v1.36";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -232,7 +232,7 @@ EPD2IN13BC.prototype.setPartialWindowBlack = function(x, y, w, l) {
   timerStart("setPartialWindowBlack");
 
   if (this.rotate == 180) {
-      x = this.C.DISPLAY_HEIGHT - this.imageHeight - x;
+      y = this.C.DISPLAY_HEIGHT - this.imageHeight - y;
   }
 
   this.sendCommand(this.C.PARTIAL_IN);
