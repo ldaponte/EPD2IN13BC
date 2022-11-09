@@ -253,7 +253,6 @@ var font_table = {
     ])
   };
   
-  
   function run() {
   
     var spi = SPI1;
@@ -267,16 +266,18 @@ var font_table = {
         resetPin : D30,
         dcPin : D29,
         csPin : D28,
-        busyPin : D31
+        busyPin : D31,
     }, spi);
   
     print("version: ", display.driverVersion);
+
     display.init();
   
-    display.paint_clear(display.C.UNCOLORED);
-    display.paint_drawStringAt(8, 2, "beer 27%", font_table, display.C.COLORED);
-    display.paint_drawStringAt(8, 24, "battery 93%", font_table, display.C.COLORED);
-    display.setPartialWindowBlack(0, 8, display.C.PAINT_WIDTH, display.C.PAINT_HEIGHT);
+    display.setImageBuffer(128, 18);  //Number of pixels wide x pixels heigh
+    display.paintClear(display.C.UNCOLORED);
+    display.paintDrawStringAt(8, 2, "beer 27%", font_table, display.C.COLORED);
+    display.paintDrawStringAt(8, 24, "battery 93%", font_table, display.C.COLORED);
+    display.setPartialWindowBlack(0, 8, display.getImageWidth(), display.getImageHeight());
     
     display.displayFrame();
   

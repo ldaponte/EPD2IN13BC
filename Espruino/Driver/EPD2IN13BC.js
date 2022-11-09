@@ -14,12 +14,14 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.28";
+  this.driverVersion = "v1.29";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
   this.busyPin = config.busyPin;
   this.spi = spi;
+  this.image = new Uint8Array(0);
+  this.paintHeight = config.paintHeight;
 }
 
 /* 212 is actual DISPLAY_HEIGHT but playing with smaller numbers 
@@ -43,11 +45,29 @@ EPD2IN13BC.prototype.C = {
   COLORED  :   0,
   UNCOLORED :  1,
   DISPLAY_WIDTH : 104,
-  DISPLAY_HEIGHT : 48, //212
-  PAINT_WIDTH: 128,
-  PAINT_HEIGHT : 48, //18
+  DISPLAY_HEIGHT : 212, //212
   FONT_WIDTH : 7,
   FONT_HEIGHT : 12
+};
+
+EPD2IN13BC.prototype.setImageBuffer = function(width, height) {
+  this.imageWidth = width % 8 ? width + 8 - (width % 8) : width;  //ensure multiple of 8
+  this.imageHeight = height;
+  this.image = new Uint8Array(this.imageWidth * this.imageHeight / 8);
+};
+
+EPD2IN13BC.prototype.setImageWidth = function(width) {
+  this.imageWidth = width % 8 ? width + 8 - (width % 8) : width;  //ensure multiple of 8
+  if(this.imageWidth * this.imageHeight / 8 > this.image.length) {
+    this.image = new Uint8Array(this.imageWidth * this.imageHeight / 8);  //automatically grow the image buffer - contents lost
+  }
+};
+
+EPD2IN13BC.prototype.setImageHeight = function(height) {
+  this.imageHeight = height;
+  if(this.imageWidth * this.imageHeight / 8 > this.image.length) {
+    this.image = new Uint8Array(this.imageWidth * this.imageHeight / 8);  //automatically grow the image buffer - contents lost
+  }
 };
 
 EPD2IN13BC.prototype.delay = function(miliseconds) {
@@ -101,14 +121,14 @@ EPD2IN13BC.prototype.clearFrame = function() {
 
 /* if colored = 0 and we've never set any bits in paint area then we don't need
 to call this function since the image buffer is automatically initialized to 0x00 */
-EPD2IN13BC.prototype.paint_clear = function(colored) {
-  timerStart("paint_clear");
+EPD2IN13BC.prototype.paintClear = function(colored) {
+  timerStart("paintClear");
   if (colored) {
     this.image.fill(0xFF);
   } else {
     this.image.fill(0x00);
   }
-  timerElapsed("paint_clear");
+  timerElapsed("paintClear");
 };
 
 EPD2IN13BC.prototype.sleep = function() {
@@ -120,18 +140,18 @@ EPD2IN13BC.prototype.sleep = function() {
   timerElapsed("sleep");
 };
 
-EPD2IN13BC.prototype.paint_drawPixel = function(x, y, colored) {
-  //timerStart("paint_drawPixel");  //About 8ms
+EPD2IN13BC.prototype.paintDrawPixel = function(x, y, colored) {
+  //timerStart("paintDrawPixel");  //About 8ms
 
-  if(x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
+  if(x < 0 || x >= this.paintWidth || y < 0 || y >= this.paintHeight) {
       return;
   }
-  this.paint_drawAbsolutePixel(x, y, colored);
-  //timerElapsed("paint_drawPixel");
+  this.paintDrawAbsolutePixel(x, y, colored);
+  //timerElapsed("paintDrawPixel");
 };
 
-EPD2IN13BC.prototype.paint_drawCharAt = function(x, y, ascii_char, font, colored) {
-  timerStart("paint_drawCharAt");
+EPD2IN13BC.prototype.paintDrawCharAt = function(x, y, ascii_char, font, colored) {
+  timerStart("paintDrawCharAt");
   var i = 0;
   var j = 0;
 
@@ -141,7 +161,7 @@ EPD2IN13BC.prototype.paint_drawCharAt = function(x, y, ascii_char, font, colored
   for (j = 0; j < this.C.FONT_HEIGHT; j++) {
       for (i = 0; i < this.C.FONT_WIDTH; i++) {
           if (font_char[offset] & (0x80 >> (i % 8))) {
-              this.paint_drawPixel(x + i, y + j, colored);
+              this.paintDrawPixel(x + i, y + j, colored);
           }
           if (i % 8 == 7) {
               offset++;
@@ -151,38 +171,38 @@ EPD2IN13BC.prototype.paint_drawCharAt = function(x, y, ascii_char, font, colored
           offset++;
       }
   }
-  timerElapsed("paint_drawCharAt");
+  timerElapsed("paintDrawCharAt");
 };
 
-EPD2IN13BC.prototype.paint_drawStringAt = function(x, y, text, font, colored) {
-  timerStart("paint_drawStringAt");
+EPD2IN13BC.prototype.paintDrawStringAt = function(x, y, text, font, colored) {
+  timerStart("paintDrawStringAt");
   var refcolumn = x;
   var text_elements = text.split("");
 
   /* Send the string character by character on EPD */
   for (i = 0; i < text_elements.length; i++) {
-    this.paint_drawCharAt(refcolumn, y, text_elements[i], font, colored);
+    this.paintDrawCharAt(refcolumn, y, text_elements[i], font, colored);
     refcolumn += this.C.FONT_WIDTH;
   }
-  timerElapsed("paint_drawStringAt");
+  timerElapsed("paintDrawStringAt");
 };
 
-EPD2IN13BC.prototype.paint_drawAbsolutePixel = function(x, y, colored) {
-  //timerStart("paint_drawAbsolutePixel");  //About 3.5ms
+EPD2IN13BC.prototype.paintDrawAbsolutePixel = function(x, y, colored) {
+  //timerStart("paintDrawAbsolutePixel");  //About 3.5ms
   var val;
 
-  if (x < 0 || x >= this.C.PAINT_WIDTH || y < 0 || y >= this.C.PAINT_HEIGHT) {
+  if (x < 0 || x >= this.paintWidth || y < 0 || y >= this.paintHeight) {
       return;
   }
 
-  val = Math.floor((x + y * this.C.PAINT_WIDTH) / 8);
+  val = Math.floor((x + y * this.paintWidth) / 8);
 
   if (colored) {
       this.image[val] |= 0x80 >> (x % 8);
   } else {
       this.image[val] &= ~(0x80 >> (x % 8));
   }
-  //timerElapsed("paint_drawAbsolutePixel");
+  //timerElapsed("paintDrawAbsolutePixel");
 };
 
 EPD2IN13BC.prototype.setPartialWindowBlack = function(x, y, w, l) {
@@ -234,8 +254,6 @@ EPD2IN13BC.prototype.init = function() {
   pinMode(this.resetPin, "output");
   pinMode(this.dcPin, "output");
   pinMode(this.busyPin, "input");
-
-  this.image = new Uint8Array(this.C.PAINT_WIDTH * this.C.PAINT_HEIGHT / 8);
 
   this.reset();
 
