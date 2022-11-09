@@ -14,7 +14,7 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.32";
+  this.driverVersion = "v1.33";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
