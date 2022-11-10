@@ -46,7 +46,7 @@ function run() {
   // paintDrawStringAt(start_pixel_column, start_pixel_row, message, font, display.C.COLORED)
   // this example will start the message 8 pixels from the left margin of the image buffer
   // and 2 pixels from the top margin of the image buffer
-  display.paintDrawStringAt(8, 2, "beer 27%", font12.font, display.C.COLORED);
+  display.paintDrawStringAt(8, 2, "beer 27%", font12, display.C.COLORED);
   
   // setPartialWindowBlack copies the image buffer to the display hardware
   // setPartialWindowBlack(start_pixel_column, start_pixel_row, image_width, image_height)
@@ -56,7 +56,7 @@ function run() {
   display.setPartialWindowBlack(0, 8, display.getImageWidth(), display.getImageHeight());
   
   display.paintClear(display.C.UNCOLORED);
-  display.paintDrawStringAt(8, 2, "battery 88%", font12.font, display.C.COLORED);
+  display.paintDrawStringAt(8, 2, "battery 88%", font12, display.C.COLORED);
   display.setPartialWindowBlack(0, 24, display.getImageWidth(), display.getImageHeight());
   
   // displayFrame tells the hardware to display what was sent to the display memory by 
