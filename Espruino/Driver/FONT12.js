@@ -1,4 +1,5 @@
 function FONT12 () {
+    this.version = 1.0;
 }
 
 FONT12.prototype.font = {
