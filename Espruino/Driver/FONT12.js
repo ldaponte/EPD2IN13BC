@@ -1,7 +1,6 @@
 function FONT12 () {
-    this.version = "1.0";
+    this.version = "v1.0";
     this.font = {
-        version: "v1.0",
         size: {
             height: 12,
             width: 7
