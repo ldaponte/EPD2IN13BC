@@ -202,7 +202,7 @@ EPD2IN13BC.prototype.paintDrawStringAt = function(x, y, text, font, colored) {
 
   /* Send the string character by character on EPD */
   for (i = 0; i < text_elements.length; i++) {
-    this.paintDrawCharAt(refcolumn, y, text_elements[i], font.table, colored);
+    this.paintDrawCharAt(refcolumn, y, text_elements[i], font, colored);
     refcolumn += font.size.width;
   }
   timerElapsed("paintDrawStringAt");
