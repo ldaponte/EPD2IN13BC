@@ -17,7 +17,10 @@ function run() {
 
   var font12 = require("https://raw.githubusercontent.com/ldaponte/EPD2IN13BC/main/Espruino/Driver/FONT12.js").font();
 
+  var font16 = require("https://raw.githubusercontent.com/ldaponte/EPD2IN13BC/main/Espruino/Driver/FONT16.js").font();
+
   print("font12 version: ", font12.version);
+  print("font16 version: ", font16.version);
   print("driver version: ", display.version);
 
   display.init();
@@ -46,7 +49,7 @@ function run() {
   // paintDrawStringAt(start_pixel_column, start_pixel_row, message, font, display.C.COLORED)
   // this example will start the message 8 pixels from the left margin of the image buffer
   // and 2 pixels from the top margin of the image buffer
-  display.paintDrawStringAt(8, 2, "beer 27%", font12, display.C.COLORED);
+  display.paintDrawStringAt(8, 2, "beer 27%", font16, display.C.COLORED);
   
   // setPartialWindowBlack copies the image buffer to the display hardware
   // setPartialWindowBlack(start_pixel_column, start_pixel_row, image_width, image_height)
