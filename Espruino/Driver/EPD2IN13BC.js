@@ -14,7 +14,7 @@ function timerElapsed(functionName) {
   }
 }
 function EPD2IN13BC (config, spi) {
-  this.driverVersion = "v1.36";
+  this.version = "v1.36";
   this.resetPin = config.resetPin;
   this.dcPin = config.dcPin;
   this.csPin = config.csPin;
@@ -45,9 +45,7 @@ EPD2IN13BC.prototype.C = {
   COLORED  :   0,
   UNCOLORED :  1,
   DISPLAY_WIDTH : 104,
-  DISPLAY_HEIGHT : 212,
-  FONT_WIDTH : 7,
-  FONT_HEIGHT : 12
+  DISPLAY_HEIGHT : 212
 };
 
 EPD2IN13BC.prototype.setImageBuffer = function(width, height) {
@@ -179,10 +177,10 @@ EPD2IN13BC.prototype.paintDrawCharAt = function(x, y, ascii_char, font, colored)
   var j = 0;
 
   var offset = 0;
-  var font_char = font[ascii_char];
+  var font_char = font.table[ascii_char];
 
-  for (j = 0; j < this.C.FONT_HEIGHT; j++) {
-      for (i = 0; i < this.C.FONT_WIDTH; i++) {
+  for (j = 0; j < font.size.height; j++) {
+      for (i = 0; i < font.size.width; i++) {
           if (font_char[offset] & (0x80 >> (i % 8))) {
               this.paintDrawPixel(x + i, y + j, colored);
           }
@@ -190,7 +188,7 @@ EPD2IN13BC.prototype.paintDrawCharAt = function(x, y, ascii_char, font, colored)
               offset++;
           }
       }
-      if (this.C.FONT_WIDTH % 8 != 0) {
+      if (font.size.width % 8 != 0) {
           offset++;
       }
   }
@@ -204,8 +202,8 @@ EPD2IN13BC.prototype.paintDrawStringAt = function(x, y, text, font, colored) {
 
   /* Send the string character by character on EPD */
   for (i = 0; i < text_elements.length; i++) {
-    this.paintDrawCharAt(refcolumn, y, text_elements[i], font, colored);
-    refcolumn += this.C.FONT_WIDTH;
+    this.paintDrawCharAt(refcolumn, y, text_elements[i], font.table, colored);
+    refcolumn += font.size.width;
   }
   timerElapsed("paintDrawStringAt");
 };
