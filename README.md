@@ -7,6 +7,11 @@ E-Paper Espruino Driver Port Project
 
 My goal was to get this particular revison of the Waveshare 2.13 e-paper display working on a Puck.js device with very basic functionality.  Please expand functionality as needed.
 
+This display is three color - black, white, and red but only black and white are implemented in this driver so far
+
+Three color e-paper is very slow and you will see a lot of flashing when displayFrame() is called - this
+appears to be normal.  Had I known this I would have chosen the black and white display.
+
 Waveshare 2.13 inch e-paper display V2.1 to Puck.js pinouts
 
 | Puck Pin | Display Pin |
