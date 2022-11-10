@@ -1,7 +1,8 @@
-function font12 () {
+function FONT12 () {
 }
 
-font12.prototype.font = {
+FONT12.prototype.font = {
+    version: 1.0,
     size: {
       height: 12,
       width: 7
@@ -263,5 +264,5 @@ font12.prototype.font = {
   };
 
   exports.font = function () {
-    return new font12();
+    return new FONT12();
   };
